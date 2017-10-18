@@ -13,6 +13,7 @@ Delay2
 Dig0
 Dig1
 Dig2
+Dig0Code
 Dig1Code
 Dig2Code
      endc
@@ -20,8 +21,12 @@ Dig2Code
      org 0
      
 Start:
-    movlw	0x50
+    movlw	0x70
     movwf	OSCCON	    ; Set internal clock to 80 Mhz
+    
+    movlw	b'11001111' ; Timer0 config
+    movwf	T0CON	    ; Move Timer0 config into T0CON
+    
     clrf	TRISD
     clrf	TRISB
     clrf	PORTD	 
@@ -29,37 +34,50 @@ Start:
     clrf	Dig0
     clrf	Dig1
     clrf	Dig2
+    clrf	Dig0Code
     clrf	Dig1Code
     clrf	Dig2Code
     
 MainLoop:
+    movlw	0xF0
+    cpfslt	TMR0L
+    call	IncDisp
     
     movlw	0x01	    ; Select first digit
+    setf	LATD
     movwf	LATB
+    movff	Dig0Code, LATD
+    nop
+    nop
+    movlw	0x02
+    setf	LATD
+    movwf	LATB
+    movff	Dig1Code, LATD
+    nop
+    nop
+    movlw	0x04
+    setf	LATD
+    movwf	LATB
+    movff	Dig2Code, LATD
+    nop
+    nop
+    setf	LATD
+    goto	MainLoop
+    
+IncDisp:
     incf	Dig0	    ; Increments Dig0
     movlw	0x0A	    ; Moves literal 10 into WREG
     cpfseq	Dig0	    ; Compares Dig0 to 10, skip if equal
     goto	ItGood
     movlw	0x0
     movwf	Dig0
-    ;goto	Tens
 ItGood:
     movf	Dig0,0	    ; Move the value of Dig0 into WREG
     call	Inc7Seg	    ; Call Inc7Seg with the value of Dig0 in WREG
-    movwf	LATD	    ; Moves the number onto the display
-    movlw	0x02
-    ;movwf	LATB
-    ;movff	Dig1Code, LATD
-   ; movlw	0x04
-    ;movff	Dig2Code, LATD
+    movwf	Dig0Code    ; Moves the number onto the display
     
-    call	Delay
-    goto	MainLoop    ; Loopback
+    return
     
-Tens:
-    movlw	0x02
-    movwf	LATB
-    incf	Dig0
 Inc7Seg:
     mullw	0x02	    ; Multiply WREG by two 
     movf	PRODL,0	    ; Move the result into WREG
@@ -75,17 +93,5 @@ Inc7Seg:
     retlw	0x00	    ; 8
     retlw	0x10	    ; 9
     
-Delay:
-    movlw	0xFF
-    movwf	Delay2
-DelayLoop1:
-    movlw	0xFF
-    movwf	Delay1
-DelayLoop2:
-    decfsz	Delay1,f
-    goto	DelayLoop2
-    decfsz	Delay2,f
-    goto	DelayLoop1
-    return
     
 end
