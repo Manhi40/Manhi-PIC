@@ -47,11 +47,11 @@ ItGood:
     movf	Dig0,0	    ; Move the value of Dig0 into WREG
     call	Inc7Seg	    ; Call Inc7Seg with the value of Dig0 in WREG
     movwf	LATD	    ; Moves the number onto the display
-    movlw	0x02
-    movwf	LATB
-    movff	Dig1Code, LATD
-    movlw	0x04
-    movff	Dig2Code, LATD
+    ;movlw	0x02
+    ;movwf	LATB
+    ;movff	Dig1Code, LATD
+   ; movlw	0x04
+    ;movff	Dig2Code, LATD
     
     call	Delay
     goto	MainLoop    ; Loopback
