@@ -35,4 +35,11 @@ Init:
     bsf		LATE, 1	    ; Toggle En on and off
     bcf		LATE, 1
     
+    movlw	b'00001111'
+    movwf	LATD
+    
+    bsf		LATE, 1
+    bcf		LATE, 1
+    
+DispWrite:
     
